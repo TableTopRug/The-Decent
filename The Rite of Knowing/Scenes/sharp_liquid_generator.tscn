@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxkqh8givcn6o"]
+
+[ext_resource type="Script" path="res://Scripts/SharpLiquidGenerator.cs" id="1_x3448"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_q0b7j"]
+
+[node name="SharpLiquidGenerator" type="Marker2D"]
+script = ExtResource("1_x3448")
+PARTICLE_TEXTURE = SubResource("PlaceholderTexture2D_q0b7j")

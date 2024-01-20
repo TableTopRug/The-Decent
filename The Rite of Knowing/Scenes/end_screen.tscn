@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://b5b1pidjavyq4"]
+
+[node name="End Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "YOU HAVE FAILED"

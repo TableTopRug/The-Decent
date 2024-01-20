@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpanrbixisfc5"]
+
+[ext_resource type="Script" path="res://Scripts/Player.cs" id="1_7v60f"]
+[ext_resource type="Texture2D" uid="uid://by6pc0s1se6nk" path="res://icon.svg" id="2_wo2ka"]
+
+[node name="Player" type="Node2D"]
+scale = Vector2(0.1, 0.1)
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 2
+collision_mask = 61
+script = ExtResource("1_7v60f")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("2_wo2ka")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(3.5, 3.5)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CharacterBody2D"]
+polygon = PackedVector2Array(64, -58.1, 64, 55, 55.7, 64, -56.3, 64, -64, 58, -64, 55, -64, -55.1, -58.1, -64, -55.5, -64, 55.1, -64)
+
+[node name="LifeTimer" type="Timer" parent="CharacterBody2D"]
+one_shot = true

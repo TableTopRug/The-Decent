@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dipmo6wvb1alu"]
+
+[ext_resource type="Script" path="res://Scripts/Known.cs" id="1_0rmhw"]
+[ext_resource type="Texture2D" uid="uid://by6pc0s1se6nk" path="res://icon.svg" id="1_lr1o0"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_m23t4"]
+
+[node name="Known" type="Node2D"]
+
+[node name="RigidBody2D" type="StaticBody2D" parent="."]
+collision_layer = 132
+script = ExtResource("1_0rmhw")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="RigidBody2D"]
+visible = false
+sprite_frames = SubResource("SpriteFrames_m23t4")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RigidBody2D"]
+polygon = PackedVector2Array(58, -62.8, 58, -61.5, 63, -57.5, 63, -55.4, 64, -54.4, 64, 54, 62.8, 58, 61.5, 58, 57.5, 63, 55.4, 63, 54.4, 64, -54.6, 64, -63, 57.5, -63, 55.4, -64, 54.4, -64, -54, -62.8, -58, -61.5, -58, -57.5, -63, -55.2, -63, -54, -63.6, 54, -64)
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+texture = ExtResource("1_lr1o0")

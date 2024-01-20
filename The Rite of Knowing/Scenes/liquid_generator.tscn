@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://be38so35p732j"]
+
+[ext_resource type="Script" path="res://Scripts/Liquids.gd" id="1_17205"]
+
+[node name="Liquid Generator" type="Marker2D"]
+script = ExtResource("1_17205")
