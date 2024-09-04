@@ -5,32 +5,38 @@ using System.Linq;
 
 public partial class Player : CharacterBody2D
 {
-	[Export]
-	public const float Speed = 10.0f;
-	[Export]
+	
+	public const float Speed = 1.0f;
+	public const float MaxSpeed = 10.0f;
 	public const float JumpVelocity = 159f;
-	[Export]
 	public const float Friction = .01f;
-	[Export]
-	public const float AirResistMult = .5f;
-	[Export]
+	public const float AirResistMult = .3f;
 	public const int NumJumps = 1;
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
-	public float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
+	public static float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
+
+	public enum MoveDir
+	{
+		LEFT, 
+		RIGHT, 
+		UP, 
+		DOWN, 
+		num_move_dir
+	}
 
 	private Vector2? mouseDown = null;
 	private Vector2? mouseUp = null;
-	private bool md = false;
-	private bool safe = false;
-	private bool onFloor = false;
-	private bool isHurting = false, hurt = false;
 	private Node2D? safeHome = null;
 	private Node2D TRAJ_LINE;
+	private bool md = false;
+	private bool safe = false;
+	private bool onFloor = false, Ystopped = false;
+	private bool isHurting = false, hurt = false;
 	private int jumpd = 0;
 	private int lives = 1;
-	Timer lifeTimer;
 	private int deaths = 0;
+	Timer lifeTimer;
 
 
 	[Signal]
@@ -39,6 +45,12 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready()
 	{
+		FloorBlockOnWall = true;
+		FloorSnapLength = 0.5f;
+		FloorStopOnSlope = true;
+		MotionMode = MotionModeEnum.Grounded;
+
+
 		lifeTimer = GetNode<Timer>("LifeTimer");
 		Godot.Collections.Array<Godot.Node> nodes = GetTree().GetNodesInGroup("PlayerInteract");
 
@@ -56,27 +68,6 @@ public partial class Player : CharacterBody2D
 		}
 
 		base._Ready();
-	}
-
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		if (@event is InputEventMouseButton eventMouseButton) {
-			if (eventMouseButton.ButtonIndex == MouseButton.Left) {
-				if (!md && eventMouseButton.Pressed) {
-					mouseDown = eventMouseButton.GlobalPosition;
-					md = true;
-					// GD.Print("pressed");
-					return;
-				} else if (md && !eventMouseButton.Pressed) {
-					mouseUp = eventMouseButton.GlobalPosition;
-					md = false;
-					// GD.Print("released");
-					return;
-				}
-			}
-		}
-
-		base._UnhandledInput(@event);
 	}
 
 	public override void _Process(double delta)
@@ -98,53 +89,165 @@ public partial class Player : CharacterBody2D
 		base._Process(delta);
 	}
 
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		if (@event is InputEventMouseButton eventMouseButton)
+		{
+			if (eventMouseButton.ButtonIndex == MouseButton.Left)
+			{
+				if (!md && eventMouseButton.Pressed)
+				{
+					mouseDown = eventMouseButton.GlobalPosition;
+					md = true;
+					// GD.Print("pressed");
+					return;
+				}
+				else if (md && !eventMouseButton.Pressed)
+				{
+					mouseUp = eventMouseButton.GlobalPosition;
+					md = false;
+					// GD.Print("released");
+					return;
+				}
+			}
+		}
+		else if (@event is InputEventKey eventKey)
+		{
+			if (eventKey.Pressed && eventKey.Keycode == Key.Escape)
+			{
+				GetTree().Quit();
+			}
+			else
+			{
+				if (Input.IsActionPressed("left"))
+				{
+					move(MoveDir.LEFT);
+				}
+				if (Input.IsActionPressed("right"))
+				{
+					move(MoveDir.RIGHT);
+				}
+				if (Input.IsActionJustPressed("jump"))
+				{
+					Jump(0);
+				}
+			}
+		}
+
+		base._UnhandledInput(@event);
+	}
+
+	private void MoveLeft(float delta)
+	{
+		if (Velocity.X > -MaxSpeed && Velocity.X - delta > -MaxSpeed)
+		{
+			Velocity.X = Mathf.Lerp(Velocity.X, -MaxSpeed, delta);
+		}
+		else
+		{
+			Velocity.X = -MaxSpeed;
+		}
+	}
+
+	private void MoveRight(float delta)
+	{
+		if (Velocity.X < MaxSpeed && Velocity.X + delta < MaxSpeed)
+		{
+			Velocity.X = Mathf.Lerp(Velocity.X, MaxSpeed, delta);
+		}
+		else
+		{
+			Velocity.X = MaxSpeed;
+		}
+	}
+
+	private void Jump(float delta)
+	{
+		if (NumJumps > jumpd)
+		{
+			Velocity.Y -= JumpVelocity;
+			jumpd++;
+			onFloor = false;
+			Ystopped = false;
+		}
+	}
+
+	public void move(MoveDir dir)
+	{
+		float delta;
+
+		if (!onFloor)
+		{
+			delta = Speed * AirResistMult;
+		} else
+		{
+			delta = Speed - Friction;
+		}
+		switch (dir)
+		{
+			case MoveDir.LEFT:
+				MoveLeft(delta); 
+				break;
+			case MoveDir.RIGHT:
+				MoveRight(delta);
+				break;
+			case MoveDir.UP:
+				Jump();
+				break;
+			case MoveDir.DOWN:
+				//TODO: MoveDown
+				break;	
+			default:
+				break;
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
+		//get the velocity and transform
 		Vector2 velocity = Velocity;
 		Transform2D trans = GlobalTransform;
+		Vector2 position = GlobalPosition;
 
-		// Add the gravity.
+		// check if attatched
 		if (!safe) {
 			// GD.Print(onFloor);
+			//if it's not moving downward
 			if (velocity.Y == 0) {
 				jumpd = 0;
+				// check to see if the y is changing
+				if (Ystopped == true) {
+					onFloor = true;
+				} else {
+					Ystopped = true;
+				}
+			} else {
+				onFloor = false;
+				Ystopped = false;
 			}
+			//if it's not on the floor
 			if (!onFloor) {
-				if (Input.IsActionPressed("left")) {
-				velocity.X -= Speed * AirResistMult;
-				}
-				if (Input.IsActionPressed("right")) {
-					velocity.X += Speed * AirResistMult;
-				}
-				velocity.Y += gravity * (float)delta + Friction * AirResistMult;
+				//add gravity
+				velocity.Y += gravity * (float)delta - Friction * AirResistMult;
 				
-				if (velocity.X > 0) {
+				//if it's moving
+				if (Mathf.Abs(velocity.X) > 0) {
+					//slow it down (friction)
 					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult);
 				}
 			} else {
-				if (Input.IsActionPressed("left")) {
-				velocity.X -= Speed;
-				}
-				if (Input.IsActionPressed("right")) {
-					velocity.X += Speed;
-				}
-				if (velocity.X > 0) {
+				//if it's moving
+				if (Mathf.Abs(velocity.X) > 0) {
+					//slow it down (friction)
 					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction);
 				}
 				
-				velocity.Y = 0;
-				onFloor = true;
-			}
-			if (onFloor) {
-				jumpd = 0;
-			}
-			if (Input.IsActionJustPressed("jump") && NumJumps > jumpd) {
-				velocity.Y -= JumpVelocity;
-				jumpd++;
-				onFloor = false;
+				//set it to move down
+				velocity.Y = gravity;
 			}
 		} else {
-			Vector2 mp = GetGlobalMousePosition();
+			//this is input handeling
+			Vector2 mp = GetGlobalMousePos();
 			float dlt = safeHome.GetAngleTo(mp);
 
 			float tmpx = (Mathf.Cos(dlt) * 35) + safeHome.GlobalPosition.X;
@@ -169,7 +272,7 @@ public partial class Player : CharacterBody2D
 				Vector2 final = (Vector2)(mouseUp - mouseDown);
 
 
-				// GD.Print(final);
+				GD.Print(final);
 				if (Mathf.Abs(final.X) > 10) {
 					final /= 10;
 
@@ -178,6 +281,14 @@ public partial class Player : CharacterBody2D
 
 					mouseDown = mouseUp = null;
 				}
+			}
+		}
+
+		if (Mathf.Abs(GlobalPosition.X - position.X) > 1)
+		{  
+			if (Mathf.Abs(GlobalPosition.X - position.X) > 1)
+			{  
+				GD.Print(); 
 			}
 		}
 
@@ -191,6 +302,9 @@ public partial class Player : CharacterBody2D
 
 		if (IsOnFloor() || IsOnWall()) {
 			jumpd = 0;
+			onFloor = true;
+		} else {
+			onFloor = false;
 		}
 	}
 

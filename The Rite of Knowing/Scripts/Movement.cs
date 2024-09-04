@@ -21,7 +21,7 @@ public partial class Movement : CharacterBody2D
 		// Velocity = Transform.X * Input.GetAxis("down", "up") * Speed;
 
 		LookAt(GetGlobalMousePosition()); // same as var rotation = GetGlobalMousePosition().AngleToPoint(Position);
-        Velocity = Transform.X * Input.GetAxis("down", "up") * Speed;
+		Velocity = Transform.X * Input.GetAxis("down", "up") * Speed;
 	}
 
 	public override void _PhysicsProcess(double delta)

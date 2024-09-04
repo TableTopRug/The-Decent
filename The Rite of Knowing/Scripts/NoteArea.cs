@@ -32,7 +32,7 @@ public partial class NoteArea : Area2D
 		GlobalTransform = trans;
 	}
 
-	private void OnBodyEntered(PhysicsBody2D body)
+	private void _on_body_entered(PhysicsBody2D body)
 	{
 		GD.Print("note get");
 		QueueFree();
