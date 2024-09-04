@@ -139,37 +139,49 @@ public partial class Player : CharacterBody2D
 
 	private void MoveLeft(float delta)
 	{
-		if (Velocity.X > -MaxSpeed && Velocity.X - delta > -MaxSpeed)
+		Vector2 velocity = Velocity;
+
+		if (velocity.X > -MaxSpeed && velocity.X - delta > -MaxSpeed)
 		{
-			Velocity.X = Mathf.Lerp(Velocity.X, -MaxSpeed, delta);
+			velocity.X = Mathf.Lerp(velocity.X, -MaxSpeed, delta);
 		}
 		else
 		{
-			Velocity.X = -MaxSpeed;
+			velocity.X = -MaxSpeed;
 		}
+
+		Velocity = velocity;
 	}
 
 	private void MoveRight(float delta)
 	{
-		if (Velocity.X < MaxSpeed && Velocity.X + delta < MaxSpeed)
+		Vector2 velocity = Velocity;
+
+		if (velocity.X < MaxSpeed && velocity.X + delta < MaxSpeed)
 		{
-			Velocity.X = Mathf.Lerp(Velocity.X, MaxSpeed, delta);
+			velocity.X = Mathf.Lerp(velocity.X, MaxSpeed, delta);
 		}
 		else
 		{
-			Velocity.X = MaxSpeed;
+			velocity.X = MaxSpeed;
 		}
+
+		Velocity = velocity;
 	}
 
 	private void Jump(float delta)
 	{
+		Vector2 velocity = Velocity;
+		
 		if (NumJumps > jumpd)
 		{
-			Velocity.Y -= JumpVelocity;
+			velocity.Y -= JumpVelocity;
 			jumpd++;
 			onFloor = false;
 			Ystopped = false;
 		}
+
+		Velocity = velocity;
 	}
 
 	public void move(MoveDir dir)
@@ -192,7 +204,7 @@ public partial class Player : CharacterBody2D
 				MoveRight(delta);
 				break;
 			case MoveDir.UP:
-				Jump();
+				Jump(0);
 				break;
 			case MoveDir.DOWN:
 				//TODO: MoveDown
@@ -247,7 +259,7 @@ public partial class Player : CharacterBody2D
 			}
 		} else {
 			//this is input handeling
-			Vector2 mp = GetGlobalMousePos();
+			Vector2 mp = GetGlobalMousePosition();
 			float dlt = safeHome.GetAngleTo(mp);
 
 			float tmpx = (Mathf.Cos(dlt) * 35) + safeHome.GlobalPosition.X;
