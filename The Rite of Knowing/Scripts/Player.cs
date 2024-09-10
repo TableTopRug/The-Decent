@@ -140,6 +140,7 @@ public partial class Player : CharacterBody2D
 	private void MoveLeft(float delta)
 	{
 		Vector2 velocity = Velocity;
+		//GD.Print("Before: " + velocity.X);
 
 		if (velocity.X > -MaxSpeed && velocity.X - delta > -MaxSpeed)
 		{
@@ -150,6 +151,7 @@ public partial class Player : CharacterBody2D
 			velocity.X = -MaxSpeed;
 		}
 
+		//GD.Print("After: " + velocity.X);
 		Velocity = velocity;
 	}
 
@@ -223,7 +225,7 @@ public partial class Player : CharacterBody2D
 
 		// check if attatched
 		if (!safe) {
-			// GD.Print(onFloor);
+			
 			//if it's not moving downward
 			if (velocity.Y == 0) {
 				jumpd = 0;
@@ -253,9 +255,6 @@ public partial class Player : CharacterBody2D
 					//slow it down (friction)
 					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction);
 				}
-				
-				//set it to move down
-				velocity.Y = gravity;
 			}
 		} else {
 			//this is input handeling
@@ -311,16 +310,10 @@ public partial class Player : CharacterBody2D
 		if (collision != null) {
 			HandleCollision(collision);
 		}
-
-		if (IsOnFloor() || IsOnWall()) {
-			jumpd = 0;
-			onFloor = true;
-		} else {
-			onFloor = false;
-		}
 	}
 
-	public void DrawTrajectory() {
+	public void DrawTrajectory() 
+	{
 		Line2D line = new Line2D();
 		Vector2 o = Position;
 
@@ -341,7 +334,8 @@ public partial class Player : CharacterBody2D
 		this.AddChild(line);
 	}
 
-	private void HandleCollision(KinematicCollision2D collision) {
+	private void HandleCollision(KinematicCollision2D collision) 
+	{
 		Velocity = Velocity.Snapped(collision.GetNormal());
 		Node collider = (Node)collision.GetCollider();
 
@@ -356,7 +350,8 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void OnGiveLife(Node2D body) {
+	private void OnGiveLife(Node2D body) 
+	{
 		if (body == null || !body.IsClass("CharacterBody2D")) {
 			return;
 		}
@@ -366,7 +361,8 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void OnGiveDeath(Node2D body) {
+	private void OnGiveDeath(Node2D body) 
+	{
 		if (body == null || (!body.IsClass("CharacterBody2D") && !(body.Name == "Spikes"))) {
 			return;
 		}
@@ -392,7 +388,8 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void OnDeathPainTimeout() {
+	private void OnDeathPainTimeout() 
+	{
 		isHurting = false;
 		hurt = true;
 		Visible = true;
