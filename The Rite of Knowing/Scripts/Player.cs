@@ -6,10 +6,10 @@ using System.Linq;
 public partial class Player : CharacterBody2D
 {
 	
-	public const float Speed = 1.0f;
-	public const float MaxSpeed = 10.0f;
+	public const float Speed = 2.3f;
+	public const float MaxSpeed = 48.0f;
 	public const float JumpVelocity = 159f;
-	public const float Friction = .01f;
+	public const float Friction = .7f;
 	public const float AirResistMult = .3f;
 	public const int NumJumps = 1;
 
@@ -99,14 +99,12 @@ public partial class Player : CharacterBody2D
 				{
 					mouseDown = eventMouseButton.GlobalPosition;
 					md = true;
-					// GD.Print("pressed");
 					return;
 				}
 				else if (md && !eventMouseButton.Pressed)
 				{
 					mouseUp = eventMouseButton.GlobalPosition;
 					md = false;
-					// GD.Print("released");
 					return;
 				}
 			}
@@ -119,29 +117,14 @@ public partial class Player : CharacterBody2D
 			}
 			else
 			{
-				if (Input.IsActionPressed("left"))
-				{
-					move(MoveDir.LEFT);
-				}
-				if (Input.IsActionPressed("right"))
-				{
-					move(MoveDir.RIGHT);
-				}
-				if (Input.IsActionJustPressed("jump"))
-				{
-					Jump(0);
-				}
 			}
 		}
 
 		base._UnhandledInput(@event);
 	}
 
-	private void MoveLeft(float delta)
+	private Vector2 MoveLeft(Vector2 velocity, float delta)
 	{
-		Vector2 velocity = Velocity;
-		//GD.Print("Before: " + velocity.X);
-
 		if (velocity.X > -MaxSpeed && velocity.X - delta > -MaxSpeed)
 		{
 			velocity.X = Mathf.Lerp(velocity.X, -MaxSpeed, delta);
@@ -151,14 +134,11 @@ public partial class Player : CharacterBody2D
 			velocity.X = -MaxSpeed;
 		}
 
-		//GD.Print("After: " + velocity.X);
-		Velocity = velocity;
+		return velocity;
 	}
 
-	private void MoveRight(float delta)
+	private Vector2 MoveRight(Vector2 velocity, float delta)
 	{
-		Vector2 velocity = Velocity;
-
 		if (velocity.X < MaxSpeed && velocity.X + delta < MaxSpeed)
 		{
 			velocity.X = Mathf.Lerp(velocity.X, MaxSpeed, delta);
@@ -168,13 +148,11 @@ public partial class Player : CharacterBody2D
 			velocity.X = MaxSpeed;
 		}
 
-		Velocity = velocity;
+		return velocity;
 	}
 
-	private void Jump(float delta)
+	private Vector2 Jump(Vector2 velocity, float delta)
 	{
-		Vector2 velocity = Velocity;
-		
 		if (NumJumps > jumpd)
 		{
 			velocity.Y -= JumpVelocity;
@@ -183,10 +161,10 @@ public partial class Player : CharacterBody2D
 			Ystopped = false;
 		}
 
-		Velocity = velocity;
+		return velocity;
 	}
 
-	public void move(MoveDir dir)
+	public Vector2 move(Vector2 velocity, MoveDir dir)
 	{
 		float delta;
 
@@ -197,16 +175,17 @@ public partial class Player : CharacterBody2D
 		{
 			delta = Speed - Friction;
 		}
+		
 		switch (dir)
 		{
 			case MoveDir.LEFT:
-				MoveLeft(delta); 
+				velocity = MoveLeft(velocity, delta); 
 				break;
 			case MoveDir.RIGHT:
-				MoveRight(delta);
+				velocity = MoveRight(velocity, delta);
 				break;
 			case MoveDir.UP:
-				Jump(0);
+				velocity = Jump(velocity, 0);
 				break;
 			case MoveDir.DOWN:
 				//TODO: MoveDown
@@ -214,6 +193,8 @@ public partial class Player : CharacterBody2D
 			default:
 				break;
 		}
+		
+		return velocity;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -256,6 +237,20 @@ public partial class Player : CharacterBody2D
 					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction);
 				}
 			}
+			
+			//do input checking
+			if (Input.IsActionPressed("left"))
+			{
+				velocity = move(velocity, MoveDir.LEFT);
+			}
+			if (Input.IsActionPressed("right"))
+			{
+				velocity = move(velocity, MoveDir.RIGHT);
+			}
+			if (Input.IsActionJustPressed("jump"))
+			{
+				velocity = Jump(velocity, 0);
+			}
 		} else {
 			//this is input handeling
 			Vector2 mp = GetGlobalMousePosition();
@@ -292,14 +287,6 @@ public partial class Player : CharacterBody2D
 
 					mouseDown = mouseUp = null;
 				}
-			}
-		}
-
-		if (Mathf.Abs(GlobalPosition.X - position.X) > 1)
-		{  
-			if (Mathf.Abs(GlobalPosition.X - position.X) > 1)
-			{  
-				GD.Print(); 
 			}
 		}
 
