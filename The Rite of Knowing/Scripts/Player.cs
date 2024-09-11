@@ -8,13 +8,14 @@ public partial class Player : CharacterBody2D
 	
 	public const float Speed = 2.3f;
 	public const float MaxSpeed = 48.0f;
-	public const float JumpVelocity = 159f;
+	public const float JumpVelocity = 150f;
 	public const float Friction = .7f;
 	public const float AirResistMult = .3f;
 	public const int NumJumps = 1;
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
-	public static float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
+	// public static float gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle() / 3.5f;
+	public static float gravity = 210;
 
 	public enum MoveDir
 	{
@@ -66,6 +67,8 @@ public partial class Player : CharacterBody2D
 				}
 			}
 		}
+
+		GD.Print(gravity);
 
 		base._Ready();
 	}
@@ -123,80 +126,6 @@ public partial class Player : CharacterBody2D
 		base._UnhandledInput(@event);
 	}
 
-	private Vector2 MoveLeft(Vector2 velocity, float delta)
-	{
-		if (velocity.X > -MaxSpeed && velocity.X - delta > -MaxSpeed)
-		{
-			velocity.X = Mathf.Lerp(velocity.X, -MaxSpeed, delta);
-		}
-		else
-		{
-			velocity.X = -MaxSpeed;
-		}
-
-		return velocity;
-	}
-
-	private Vector2 MoveRight(Vector2 velocity, float delta)
-	{
-		if (velocity.X < MaxSpeed && velocity.X + delta < MaxSpeed)
-		{
-			velocity.X = Mathf.Lerp(velocity.X, MaxSpeed, delta);
-		}
-		else
-		{
-			velocity.X = MaxSpeed;
-		}
-
-		return velocity;
-	}
-
-	private Vector2 Jump(Vector2 velocity, float delta)
-	{
-		if (NumJumps > jumpd)
-		{
-			velocity.Y -= JumpVelocity;
-			jumpd++;
-			onFloor = false;
-			Ystopped = false;
-		}
-
-		return velocity;
-	}
-
-	public Vector2 move(Vector2 velocity, MoveDir dir)
-	{
-		float delta;
-
-		if (!onFloor)
-		{
-			delta = Speed * AirResistMult;
-		} else
-		{
-			delta = Speed - Friction;
-		}
-		
-		switch (dir)
-		{
-			case MoveDir.LEFT:
-				velocity = MoveLeft(velocity, delta); 
-				break;
-			case MoveDir.RIGHT:
-				velocity = MoveRight(velocity, delta);
-				break;
-			case MoveDir.UP:
-				velocity = Jump(velocity, 0);
-				break;
-			case MoveDir.DOWN:
-				//TODO: MoveDown
-				break;	
-			default:
-				break;
-		}
-		
-		return velocity;
-	}
-
 	public override void _PhysicsProcess(double delta)
 	{
 		//get the velocity and transform
@@ -208,7 +137,7 @@ public partial class Player : CharacterBody2D
 		if (!safe) {
 			
 			//if it's not moving downward
-			if (velocity.Y == 0) {
+			if (velocity.Y == 0 || velocity.Y == gravity) {
 				jumpd = 0;
 				// check to see if the y is changing
 				if (Ystopped == true) {
@@ -236,6 +165,8 @@ public partial class Player : CharacterBody2D
 					//slow it down (friction)
 					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction);
 				}
+
+				velocity.Y = gravity;
 			}
 			
 			//do input checking
@@ -380,6 +311,80 @@ public partial class Player : CharacterBody2D
 		isHurting = false;
 		hurt = true;
 		Visible = true;
+	}
+
+	private Vector2 MoveLeft(Vector2 velocity, float delta)
+	{
+		if (velocity.X > -MaxSpeed && velocity.X - delta > -MaxSpeed)
+		{
+			velocity.X = Mathf.Lerp(velocity.X, -MaxSpeed, delta);
+		}
+		else
+		{
+			velocity.X = -MaxSpeed;
+		}
+
+		return velocity;
+	}
+
+	private Vector2 MoveRight(Vector2 velocity, float delta)
+	{
+		if (velocity.X < MaxSpeed && velocity.X + delta < MaxSpeed)
+		{
+			velocity.X = Mathf.Lerp(velocity.X, MaxSpeed, delta);
+		}
+		else
+		{
+			velocity.X = MaxSpeed;
+		}
+
+		return velocity;
+	}
+
+	private Vector2 Jump(Vector2 velocity, float delta)
+	{
+		if (NumJumps > jumpd)
+		{
+			velocity.Y -= JumpVelocity;
+			jumpd++;
+			onFloor = false;
+			Ystopped = false;
+		}
+
+		return velocity;
+	}
+
+	public Vector2 move(Vector2 velocity, MoveDir dir)
+	{
+		float delta;
+
+		if (!onFloor)
+		{
+			delta = Speed * AirResistMult;
+		} else
+		{
+			delta = Speed - Friction;
+		}
+		
+		switch (dir)
+		{
+			case MoveDir.LEFT:
+				velocity = MoveLeft(velocity, delta); 
+				break;
+			case MoveDir.RIGHT:
+				velocity = MoveRight(velocity, delta);
+				break;
+			case MoveDir.UP:
+				velocity = Jump(velocity, 0);
+				break;
+			case MoveDir.DOWN:
+				//TODO: MoveDown
+				break;	
+			default:
+				break;
+		}
+		
+		return velocity;
 	}
 
 }
