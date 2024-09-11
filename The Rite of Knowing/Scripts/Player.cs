@@ -8,9 +8,9 @@ public partial class Player : CharacterBody2D
 	
 	public const float Speed = 2.3f;
 	public const float MaxSpeed = 48.0f;
-	public const float JumpVelocity = 150f;
-	public const float Friction = .7f;
-	public const float AirResistMult = .3f;
+	public const float JumpVelocity = 120f;
+	public const float Friction = .07f;
+	public const float AirResistMult = .2f;
 	public const int NumJumps = 1;
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -157,7 +157,7 @@ public partial class Player : CharacterBody2D
 				//if it's moving
 				if (Mathf.Abs(velocity.X) > 0) {
 					//slow it down (friction)
-					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult);
+					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult );
 				}
 			} else {
 				//if it's moving
@@ -191,8 +191,8 @@ public partial class Player : CharacterBody2D
 			float tmpy = (Mathf.Sin(dlt) * 35) + safeHome.GlobalPosition.Y;
 
 
-			trans.Origin.X = Mathf.MoveToward(GlobalPosition.X, tmpx, Speed/6);
-			trans.Origin.Y = Mathf.MoveToward(GlobalPosition.Y, tmpy, Speed/6);
+			trans.Origin.X = Mathf.MoveToward(GlobalPosition.X, tmpx, Speed/2);
+			trans.Origin.Y = Mathf.MoveToward(GlobalPosition.Y, tmpy, Speed/2);
 
 			// ((Sprite2D)FindChild("Sprite2D")).FlipV = false;
 			// if  (mp.X > GlobalPosition.X) {
@@ -213,8 +213,8 @@ public partial class Player : CharacterBody2D
 				if (Mathf.Abs(final.X) > 10) {
 					final /= 10;
 
-					velocity.X += final.X * Speed;
-					velocity.Y += final.Y * Speed;
+					velocity.X += (float)(final.X * Speed);
+					velocity.Y += (float)(final.Y * Speed);
 
 					mouseDown = mouseUp = null;
 				}
