@@ -7,10 +7,10 @@ public partial class Player : CharacterBody2D
 {
 	
 	public const float Speed = 2.3f;
-	public const float MaxSpeed = 48.0f;
+	public const float MaxSpeed = 69.0f;
 	public const float JumpVelocity = 120f;
-	public const float Friction = .07f;
-	public const float AirResistMult = .2f;
+	public const float Friction = 10f;
+	public const float AirResistMult = .03f;
 	public const int NumJumps = 1;
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -98,13 +98,13 @@ public partial class Player : CharacterBody2D
 		{
 			if (eventMouseButton.ButtonIndex == MouseButton.Left)
 			{
-				if (!md && eventMouseButton.Pressed)
+				if (!md && eventMouseButton.Pressed && safe)
 				{
 					mouseDown = eventMouseButton.GlobalPosition;
 					md = true;
 					return;
 				}
-				else if (md && !eventMouseButton.Pressed)
+				else if (md && !eventMouseButton.Pressed && safe)
 				{
 					mouseUp = eventMouseButton.GlobalPosition;
 					md = false;
@@ -128,6 +128,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		GD.Print(Velocity.X + " " + (delta * Friction));
 		//get the velocity and transform
 		Vector2 velocity = Velocity;
 		Transform2D trans = GlobalTransform;
@@ -152,18 +153,18 @@ public partial class Player : CharacterBody2D
 			//if it's not on the floor
 			if (!onFloor) {
 				//add gravity
-				velocity.Y += gravity * (float)delta - Friction * AirResistMult;
+				velocity.Y += (float)(gravity * (float)delta - Friction * AirResistMult * delta);
 				
 				//if it's moving
 				if (Mathf.Abs(velocity.X) > 0) {
 					//slow it down (friction)
-					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult );
+					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult * delta);
 				}
 			} else {
 				//if it's moving
 				if (Mathf.Abs(velocity.X) > 0) {
 					//slow it down (friction)
-					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction);
+					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * (delta));
 				}
 
 				velocity.Y = gravity;
@@ -211,7 +212,7 @@ public partial class Player : CharacterBody2D
 
 				GD.Print(final);
 				if (Mathf.Abs(final.X) > 10) {
-					final /= 10;
+					final /= 5;
 
 					velocity.X += (float)(final.X * Speed);
 					velocity.Y += (float)(final.Y * Speed);

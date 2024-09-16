@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cr6blw1x08j3n" path="res://Scenes/hud.tscn" id="3_qd0ix"]
 
 [node name="Player" type="Node2D"]
-scale = Vector2(0.1, 0.1)
+scale = Vector2(0.045, 0.045)
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 collision_layer = 2
@@ -16,7 +16,7 @@ script = ExtResource("1_7v60f")
 texture = ExtResource("2_wo2ka")
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-zoom = Vector2(3.5, 3.5)
+zoom = Vector2(5, 5)
 
 [node name="HUD" parent="CharacterBody2D/Camera2D" instance=ExtResource("3_qd0ix")]
 
