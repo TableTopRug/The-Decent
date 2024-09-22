@@ -4,24 +4,28 @@
 [ext_resource type="Texture2D" uid="uid://by6pc0s1se6nk" path="res://icon.svg" id="2_wo2ka"]
 [ext_resource type="PackedScene" uid="uid://cr6blw1x08j3n" path="res://Scenes/hud.tscn" id="3_qd0ix"]
 
-[node name="Player" type="Node2D"]
+[node name="CharacterBody2D" type="CharacterBody2D"]
 scale = Vector2(0.045, 0.045)
-
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 collision_layer = 2
 collision_mask = 253
 script = ExtResource("1_7v60f")
 
-[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_wo2ka")
 
-[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-zoom = Vector2(5, 5)
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(7, 7)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.15
+drag_top_margin = 0.07
+drag_right_margin = 0.15
+drag_bottom_margin = 0.07
 
-[node name="HUD" parent="CharacterBody2D/Camera2D" instance=ExtResource("3_qd0ix")]
+[node name="HUD" parent="Camera2D" instance=ExtResource("3_qd0ix")]
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CharacterBody2D"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(64, -58.1, 64, 55, 55.7, 64, -56.3, 64, -64, 58, -64, 55, -64, -55.1, -58.1, -64, -55.5, -64, 55.1, -64)
 
-[node name="LifeTimer" type="Timer" parent="CharacterBody2D"]
+[node name="LifeTimer" type="Timer" parent="."]
 one_shot = true

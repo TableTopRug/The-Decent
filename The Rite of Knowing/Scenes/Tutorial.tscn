@@ -1,0 +1,118 @@
+[gd_scene load_steps=8 format=3 uid="uid://dj241nt463363"]
+
+[ext_resource type="Texture2D" uid="uid://dmqmcxikpiloc" path="res://Assets/Single_Pixel.png" id="1_p2ht1"]
+[ext_resource type="PackedScene" uid="uid://dpanrbixisfc5" path="res://Scenes/Character.tscn" id="2_gtmhu"]
+[ext_resource type="Script" path="res://Scripts/DeathPool.cs" id="3_8qdql"]
+[ext_resource type="PackedScene" uid="uid://dipmo6wvb1alu" path="res://Scenes/known.tscn" id="4_8alg3"]
+[ext_resource type="Script" path="res://Scenes/Rockfall.cs" id="5_pj0kp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_podg8"]
+size = Vector2(5, 89)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_werhx"]
+
+[node name="Tutorial" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("2_gtmhu")]
+position = Vector2(147, 229)
+
+[node name="Triggers" type="Area2D" parent="."]
+
+[node name="Section 1 Boundary" type="CollisionShape2D" parent="Triggers"]
+position = Vector2(480.5, 191.5)
+shape = SubResource("RectangleShape2D_podg8")
+
+[node name="Terrain" type="Node2D" parent="."]
+
+[node name="Basic Ground" type="StaticBody2D" parent="Terrain"]
+collision_mask = 18
+physics_material_override = SubResource("PhysicsMaterial_werhx")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
+position = Vector2(353.5, 312.75)
+scale = Vector2(659, 142.5)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+metadata/_edit_group_ = true
+
+[node name="SinglePixel" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D"]
+position = Vector2(0.242033, 0)
+scale = Vector2(1.48407, 1)
+texture = ExtResource("1_p2ht1")
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
+position = Vector2(74.375, 204)
+scale = Vector2(98.75, 91.5)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+metadata/_edit_group_ = true
+
+[node name="SinglePixel2" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D2"]
+texture = ExtResource("1_p2ht1")
+
+[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
+position = Vector2(268, 240)
+scale = Vector2(163.75, 54.75)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+metadata/_edit_group_ = true
+
+[node name="SinglePixel4" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D3"]
+position = Vector2(0, -4.76837e-07)
+texture = ExtResource("1_p2ht1")
+
+[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
+position = Vector2(252.625, 104)
+scale = Vector2(449.219, 107.5)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+metadata/_edit_group_ = true
+
+[node name="SinglePixel3" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D4"]
+position = Vector2(-0.000520617, -2.38419e-07)
+scale = Vector2(0.998959, 1)
+texture = ExtResource("1_p2ht1")
+
+[node name="CollisionPolygon2D5" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
+position = Vector2(486.5, 231.8)
+scale = Vector2(200.625, 52.25)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+
+[node name="SinglePixel" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D5"]
+scale = Vector2(1, 1)
+texture = ExtResource("1_p2ht1")
+
+[node name="Death Pool" type="Area2D" parent="Terrain"]
+collision_layer = 16
+collision_mask = 19
+script = ExtResource("3_8qdql")
+
+[node name="Pool 1" type="CollisionPolygon2D" parent="Terrain/Death Pool" groups=["Section 1"]]
+position = Vector2(367, 244)
+scale = Vector2(46.5, 48.5)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+
+[node name="SinglePixel" type="Sprite2D" parent="Terrain/Death Pool/Pool 1"]
+modulate = Color(0.917647, 0.117647, 0, 1)
+texture = ExtResource("1_p2ht1")
+
+[node name="Back Wall" type="Node2D" parent="Terrain"]
+
+[node name="Area2D" type="Area2D" parent="Terrain/Back Wall"]
+position = Vector2(510, 104)
+scale = Vector2(84.832, 108.438)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Back Wall/Area2D"]
+modulate = Color(0, 1, 1, 1)
+polygon = PackedVector2Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5)
+script = ExtResource("5_pj0kp")
+metadata/_edit_group_ = true
+
+[node name="Rockfall Area" type="Sprite2D" parent="Terrain/Back Wall/Area2D/CollisionPolygon2D"]
+texture = ExtResource("1_p2ht1")
+
+[node name="Back Wall stopper" type="Sprite2D" parent="Terrain/Back Wall"]
+modulate = Color(1, 0, 0, 1)
+position = Vector2(480.844, 128.344)
+scale = Vector2(13.6875, 47.3125)
+texture = ExtResource("1_p2ht1")
+
+[node name="Known" parent="Terrain/Back Wall" instance=ExtResource("4_8alg3")]
+
+[connection signal="body_entered" from="Terrain/Death Pool" to="Player" method="OnGiveDeath"]
