@@ -9,7 +9,7 @@ public partial class Player : CharacterBody2D
 	public const float Speed = 2.3f;
 	public const float MaxSpeed = 69.0f;
 	public const float JumpVelocity = 120f;
-	public const float Friction = 10f;
+	public const float Friction = .02f;
 	public const float AirResistMult = .03f;
 	public const int NumJumps = 1;
 
@@ -57,7 +57,7 @@ public partial class Player : CharacterBody2D
 
 		foreach (Node node in nodes) {
 			if (node.IsClass("Area2D")) {
-				if (((Area2D)node).Name == "Death") {
+				if (((Area2D)node).Name.ToString().Contains("Death")) {
 					GD.Print("Death linked");
 					((Area2D)node).BodyEntered += OnGiveDeath;
 				}
@@ -153,18 +153,20 @@ public partial class Player : CharacterBody2D
 			//if it's not on the floor
 			if (!onFloor) {
 				//add gravity
-				velocity.Y += (float)(gravity * (float)delta - Friction * AirResistMult * delta);
+				velocity.Y += (float)(gravity * (float)delta - Friction * AirResistMult / delta);
 				
 				//if it's moving
 				if (Mathf.Abs(velocity.X) > 0) {
 					//slow it down (friction)
-					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult * delta);
+					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * AirResistMult / delta);
 				}
 			} else {
 				//if it's moving
-				if (Mathf.Abs(velocity.X) > 0) {
+				if (Mathf.Abs(velocity.X) > 1.5f) {
 					//slow it down (friction)
-					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction * (delta));
+					velocity.X = (float)Mathf.Lerp(velocity.X, 0, Friction / (delta));
+				} else {
+					velocity.X = 0f;
 				}
 
 				velocity.Y = gravity;
