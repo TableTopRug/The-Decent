@@ -1,13 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://dj241nt463363"]
+[gd_scene load_steps=9 format=3 uid="uid://dj241nt463363"]
 
 [ext_resource type="Texture2D" uid="uid://dmqmcxikpiloc" path="res://Assets/Single_Pixel.png" id="1_p2ht1"]
 [ext_resource type="PackedScene" uid="uid://dpanrbixisfc5" path="res://Scenes/Character.tscn" id="2_gtmhu"]
 [ext_resource type="Script" path="res://Scripts/DeathPool.cs" id="3_8qdql"]
 [ext_resource type="PackedScene" uid="uid://dipmo6wvb1alu" path="res://Scenes/known.tscn" id="4_8alg3"]
 [ext_resource type="Script" path="res://Scenes/Rockfall.cs" id="5_pj0kp"]
+[ext_resource type="Script" path="res://Scripts/BackStopper.cs" id="6_5ytw6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_podg8"]
-size = Vector2(5, 89)
+size = Vector2(1, 89)
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_werhx"]
 
@@ -17,15 +18,16 @@ size = Vector2(5, 89)
 position = Vector2(147, 229)
 
 [node name="Triggers" type="Area2D" parent="."]
+collision_mask = 2
 
-[node name="Section 1 Boundary" type="CollisionShape2D" parent="Triggers"]
-position = Vector2(480.5, 191.5)
+[node name="Section 1 Boundary" type="CollisionShape2D" parent="Triggers" groups=["PlayerInteract"]]
+position = Vector2(478.5, 191.5)
 shape = SubResource("RectangleShape2D_podg8")
 
 [node name="Terrain" type="Node2D" parent="."]
 
 [node name="Basic Ground" type="StaticBody2D" parent="Terrain"]
-collision_mask = 18
+collision_mask = 22
 physics_material_override = SubResource("PhysicsMaterial_werhx")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Basic Ground"]
@@ -75,7 +77,6 @@ scale = Vector2(200.625, 52.25)
 polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
 
 [node name="SinglePixel" type="Sprite2D" parent="Terrain/Basic Ground/CollisionPolygon2D5"]
-scale = Vector2(1, 1)
 texture = ExtResource("1_p2ht1")
 
 [node name="Death Pool" type="Area2D" parent="Terrain"]
@@ -94,9 +95,10 @@ texture = ExtResource("1_p2ht1")
 
 [node name="Back Wall" type="Node2D" parent="Terrain"]
 
-[node name="Area2D" type="Area2D" parent="Terrain/Back Wall"]
+[node name="Area2D" type="StaticBody2D" parent="Terrain/Back Wall"]
 position = Vector2(510, 104)
 scale = Vector2(84.832, 108.438)
+metadata/_edit_group_ = true
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Back Wall/Area2D"]
 modulate = Color(0, 1, 1, 1)
@@ -107,12 +109,21 @@ metadata/_edit_group_ = true
 [node name="Rockfall Area" type="Sprite2D" parent="Terrain/Back Wall/Area2D/CollisionPolygon2D"]
 texture = ExtResource("1_p2ht1")
 
-[node name="Back Wall stopper" type="Sprite2D" parent="Terrain/Back Wall"]
-modulate = Color(1, 0, 0, 1)
+[node name="Known" parent="Terrain/Back Wall" instance=ExtResource("4_8alg3")]
+
+[node name="Back Stopper" type="AnimatableBody2D" parent="Terrain/Back Wall"]
+script = ExtResource("6_5ytw6")
+metadata/_edit_group_ = true
+
+[node name="Back Wall stopper" type="Sprite2D" parent="Terrain/Back Wall/Back Stopper"]
+modulate = Color(0.769366, 0.19638, 0.964385, 1)
 position = Vector2(480.844, 128.344)
 scale = Vector2(13.6875, 47.3125)
 texture = ExtResource("1_p2ht1")
 
-[node name="Known" parent="Terrain/Back Wall" instance=ExtResource("4_8alg3")]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Back Wall/Back Stopper"]
+position = Vector2(480.844, 128.344)
+scale = Vector2(13.6875, 47.3125)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
 
 [connection signal="body_entered" from="Terrain/Death Pool" to="Player" method="OnGiveDeath"]

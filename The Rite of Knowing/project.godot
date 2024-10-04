@@ -28,6 +28,10 @@ project/assembly_name="The Rite of Knowing"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[global_group]
+
+PlayerInteract=""
+
 [input]
 
 left={

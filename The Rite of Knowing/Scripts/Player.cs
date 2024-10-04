@@ -128,7 +128,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		GD.Print(Velocity.X + " " + (delta * Friction));
+		// GD.Print(Velocity.X + " " + (delta * Friction));
 		//get the velocity and transform
 		Vector2 velocity = Velocity;
 		Transform2D trans = GlobalTransform;
